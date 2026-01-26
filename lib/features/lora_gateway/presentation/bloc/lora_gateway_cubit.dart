@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/lora_gateway/domain/entities/gateway_status.dart';
+import 'package:bb_mobile/core/lora_gateway/domain/entities/transaction_log_entry.dart';
 import 'package:bb_mobile/core/lora_gateway/domain/entities/usb_device_info.dart';
 import 'package:bb_mobile/core/lora_gateway/domain/repositories/lora_gateway_repository.dart';
 import 'package:bb_mobile/core/lora_gateway/domain/usecases/broadcast_received_tx_usecase.dart';
@@ -9,8 +10,11 @@ import 'package:bb_mobile/core/lora_gateway/domain/usecases/disconnect_meshtasti
 import 'package:bb_mobile/core/lora_gateway/domain/usecases/scan_usb_devices_usecase.dart';
 import 'package:bb_mobile/core/lora_gateway/domain/usecases/start_gateway_usecase.dart';
 import 'package:bb_mobile/core/lora_gateway/domain/usecases/stop_gateway_usecase.dart';
-import 'package:bb_mobile/features/lora_gateway/presentation/bloc/lora_gateway_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'lora_gateway_cubit.freezed.dart';
+part 'lora_gateway_state.dart';
 
 /// Cubit for managing the LoRa Gateway feature.
 class LoraGatewayCubit extends Cubit<LoraGatewayState> {

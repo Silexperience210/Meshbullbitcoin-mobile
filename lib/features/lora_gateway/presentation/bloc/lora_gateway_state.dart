@@ -1,13 +1,8 @@
-import 'package:bb_mobile/core/lora_gateway/domain/entities/gateway_status.dart';
-import 'package:bb_mobile/core/lora_gateway/domain/entities/transaction_log_entry.dart';
-import 'package:bb_mobile/core/lora_gateway/domain/entities/usb_device_info.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'lora_gateway_state.freezed.dart';
+part of 'lora_gateway_cubit.dart';
 
 /// State for the LoRa Gateway feature.
 @freezed
-class LoraGatewayState with _$LoraGatewayState {
+sealed class LoraGatewayState with _$LoraGatewayState {
   const factory LoraGatewayState({
     /// List of available USB devices.
     @Default([]) List<UsbDeviceInfo> availableDevices,

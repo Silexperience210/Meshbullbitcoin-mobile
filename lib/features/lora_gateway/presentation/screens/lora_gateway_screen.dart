@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/lora_gateway/domain/entities/transaction_log_entr
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/lora_gateway/presentation/bloc/lora_gateway_cubit.dart';
-import 'package:bb_mobile/features/lora_gateway/presentation/bloc/lora_gateway_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
