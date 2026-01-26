@@ -21,11 +21,14 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
+    - name: Setup FVM
+      uses: kuhnroyal/flutter-fvm-config-action@v2
+      id: fvm-config-action
+
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.27.3'
-        channel: 'stable'
+        flutter-version: ${{ steps.fvm-config-action.outputs.FLUTTER_VERSION }}
         cache: true
 
     - name: Create .env file
