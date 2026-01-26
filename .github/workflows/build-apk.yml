@@ -3,13 +3,13 @@ name: Build Android APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # Permet de lancer manuellement
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout code
@@ -37,14 +37,42 @@ jobs:
       run: flutter pub get
 
     - name: Generate code (freezed, etc.)
-      run: flutter pub run build_runner build --delete-conflicting-outputs
+      run: dart run build_runner build --delete-conflicting-outputs
 
-    - name: Build APK (debug)
-      run: flutter build apk --debug
+    - name: Build APK (release)
+      run: flutter build apk --release
 
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
+    - name: Rename APK
+      run: |
+        mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/BullBitcoin-LoRa-Gateway.apk
+
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
       with:
-        name: bull-bitcoin-lora-gateway-apk
-        path: build/app/outputs/flutter-apk/app-debug.apk
-        retention-days: 30
+        tag_name: v1.0.0-lora-${{ steps.date.outputs.date }}
+        name: Bull Bitcoin LoRa Gateway - ${{ steps.date.outputs.date }}
+        body: |
+          ## Bull Bitcoin Mobile avec LoRa Gateway
+
+          Cette version inclut la fonctionnalité **LoRa Gateway** permettant de :
+          - Recevoir des transactions Bitcoin via réseau LoRa/Meshtastic
+          - Broadcaster automatiquement sur le réseau Bitcoin (mainnet/testnet)
+          - Renvoyer confirmation (TXID) à l'expéditeur via LoRa
+
+          ### Installation
+          1. Téléchargez `BullBitcoin-LoRa-Gateway.apk`
+          2. Installez sur votre appareil Android
+          3. Allez dans Settings → LoRa Gateway
+          4. Connectez votre appareil Meshtastic en USB
+
+          ### Protocole supporté
+          - BTX binaire (0x01 START, 0x02 CHUNK, 0x03 END)
+          - BTX texte (BTX:chunk/total:hex_data)
+        files: |
+          build/app/outputs/flutter-apk/BullBitcoin-LoRa-Gateway.apk
+        draft: false
+        prerelease: false
