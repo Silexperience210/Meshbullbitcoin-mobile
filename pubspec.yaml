@@ -82,7 +82,6 @@ dependencies:
   webview_flutter: ^4.13.0
   webview_flutter_android: ^4.10.10
   webview_flutter_wkwebview: ^3.23.4
-  async: ^2.11.0
   drift: ^2.29.0
   drift_flutter: ^0.2.7
   package_info_plus: ^9.0.0
@@ -124,9 +123,7 @@ dependencies:
     git:
       url: https://github.com/Foundation-Devices/tor
       ref: b92e2bc
-  meta: ^1.17.0
   workmanager: ^0.9.0
-  path: ^1.9.0
   http: ^1.6.0
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0
