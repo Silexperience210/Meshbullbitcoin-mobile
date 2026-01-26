@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
+import 'package:bb_mobile/core/lora_gateway/lora_gateway_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
@@ -40,6 +41,7 @@ class CoreLocator {
     Bip85DerivationsLocator.registerDatasources(locator);
     LedgerLocator.registerDatasources(locator);
     BitBoxCoreLocator.registerDatasources(locator);
+    LoraGatewayCoreLocator.registerDatasources(locator);
   }
 
   static void registerPorts(GetIt locator) {
@@ -68,6 +70,7 @@ class CoreLocator {
     Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories(locator);
     BitBoxCoreLocator.registerRepositories(locator);
+    LoraGatewayCoreLocator.registerRepositories(locator);
   }
 
   static void registerServices(GetIt locator) {
@@ -95,6 +98,7 @@ class CoreLocator {
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);
     BitBoxCoreLocator.registerUsecases(locator);
+    LoraGatewayCoreLocator.registerUsecases(locator);
   }
 
   static void registerFacades(GetIt locator) {

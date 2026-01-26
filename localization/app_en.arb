@@ -12461,5 +12461,89 @@
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
+  },
+  "loraGatewayTitle": "LoRa Gateway",
+  "@loraGatewayTitle": {
+    "description": "Title for the LoRa Gateway screen"
+  },
+  "loraGatewayStatusDisconnected": "Disconnected",
+  "@loraGatewayStatusDisconnected": {
+    "description": "Status when not connected to Meshtastic device"
+  },
+  "loraGatewayStatusConnecting": "Connecting...",
+  "@loraGatewayStatusConnecting": {
+    "description": "Status while connecting to Meshtastic device"
+  },
+  "loraGatewayStatusConnected": "Connected",
+  "@loraGatewayStatusConnected": {
+    "description": "Status when connected to Meshtastic device"
+  },
+  "loraGatewayStatusActive": "Gateway Active",
+  "@loraGatewayStatusActive": {
+    "description": "Status when gateway is actively processing transactions"
+  },
+  "loraGatewayStatusError": "Error",
+  "@loraGatewayStatusError": {
+    "description": "Status when there is an error"
+  },
+  "loraGatewaySelectDevice": "Select Meshtastic Device",
+  "@loraGatewaySelectDevice": {
+    "description": "Label for device selection section"
+  },
+  "loraGatewayNoDevices": "No USB devices found.\nConnect a Meshtastic device and tap refresh.",
+  "@loraGatewayNoDevices": {
+    "description": "Message when no USB devices are found"
+  },
+  "loraGatewayConnect": "Connect",
+  "@loraGatewayConnect": {
+    "description": "Button label to connect to device"
+  },
+  "loraGatewayDisconnect": "Disconnect",
+  "@loraGatewayDisconnect": {
+    "description": "Button label to disconnect from device"
+  },
+  "loraGatewayStart": "Start Gateway",
+  "@loraGatewayStart": {
+    "description": "Button label to start the gateway"
+  },
+  "loraGatewayStop": "Stop Gateway",
+  "@loraGatewayStop": {
+    "description": "Button label to stop the gateway"
+  },
+  "loraGatewayUseTestnet": "Use Testnet",
+  "@loraGatewayUseTestnet": {
+    "description": "Label for testnet toggle"
+  },
+  "loraGatewayMainnet": "Broadcasting to Bitcoin Mainnet",
+  "@loraGatewayMainnet": {
+    "description": "Subtitle when using mainnet"
+  },
+  "loraGatewayTestnet": "Broadcasting to Bitcoin Testnet",
+  "@loraGatewayTestnet": {
+    "description": "Subtitle when using testnet"
+  },
+  "loraGatewayTxReceived": "Received",
+  "@loraGatewayTxReceived": {
+    "description": "Label for received transactions count"
+  },
+  "loraGatewayTxBroadcasted": "Broadcasted",
+  "@loraGatewayTxBroadcasted": {
+    "description": "Label for broadcasted transactions count"
+  },
+  "loraGatewayTxFailed": "Failed",
+  "@loraGatewayTxFailed": {
+    "description": "Label for failed transactions count"
+  },
+  "loraGatewayTransactionLog": "Transaction Log",
+  "@loraGatewayTransactionLog": {
+    "description": "Title for transaction log section"
+  },
+  "loraGatewayNoTransactions": "No transactions yet.\nStart the gateway to begin receiving.",
+  "@loraGatewayNoTransactions": {
+    "description": "Message when transaction log is empty"
+  },
+  "loraGatewayClearLog": "Clear",
+  "@loraGatewayClearLog": {
+    "description": "Button label to clear transaction log"
   }
 }

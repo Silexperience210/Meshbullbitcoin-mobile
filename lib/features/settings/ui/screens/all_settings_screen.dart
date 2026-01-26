@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
+import 'package:bb_mobile/features/lora_gateway/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,6 +137,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);
                   },
                 ),
+                if (Platform.isAndroid)
+                  SettingsEntryItem(
+                    icon: Icons.cell_tower,
+                    title: 'LoRa Gateway',
+                    onTap: () {
+                      context.pushNamed(LoraGatewayRoute.loraGatewayHome.name);
+                    },
+                  ),
               ],
             ),
           ),

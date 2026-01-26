@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <usb-device vendor-id="1003" product-id="9219" /> <!-- BitBox02 (0x03eb, 0x2403) -->
+    <!-- Meshtastic/T-Beam USB Serial chips -->
+    <usb-device vendor-id="4292" product-id="60000" /> <!-- Silicon Labs CP210x (0x10C4, 0xEA60) -->
+    <usb-device vendor-id="6790" product-id="29987" /> <!-- CH340 (0x1A86, 0x7523) -->
+    <usb-device vendor-id="1027" /> <!-- FTDI chips (0x0403) -->
 </resources>

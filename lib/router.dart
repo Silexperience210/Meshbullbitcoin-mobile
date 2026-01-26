@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
+import 'package:bb_mobile/features/lora_gateway/router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
@@ -163,6 +164,7 @@ class AppRouter {
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,
+      LoraGatewayRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
