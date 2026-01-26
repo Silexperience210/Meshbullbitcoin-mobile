@@ -40,12 +40,10 @@ jobs:
       run: flutter pub get
 
     - name: Generate code (freezed, etc.)
-      run: dart --enable-experiment=dot-shorthands run build_runner build --delete-conflicting-outputs
+      run: dart run build_runner build --delete-conflicting-outputs
 
     - name: Build APK (release)
-      run: flutter build apk --release --dart-define=enable-experiment=dot-shorthands
-      env:
-        DART_VM_OPTIONS: --enable-experiment=dot-shorthands
+      run: flutter build apk --release
 
     - name: Rename APK
       run: |

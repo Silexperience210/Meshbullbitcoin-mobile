@@ -8,8 +8,6 @@ linter:
     
 
 analyzer:
-  enable-experiment:
-    - dot-shorthands
   errors:
     todo: ignore
   exclude:
