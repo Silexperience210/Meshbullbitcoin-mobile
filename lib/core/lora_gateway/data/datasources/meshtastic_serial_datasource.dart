@@ -59,8 +59,10 @@ class MeshtasticSerialDatasource {
 
     try {
       final devices = await UsbSerial.listDevices();
-      return devices.map((device) => UsbDeviceInfo(
-        deviceId: device.deviceId,
+      return devices
+          .where((device) => device.deviceId != null)
+          .map((device) => UsbDeviceInfo(
+        deviceId: device.deviceId!,
         port: device.deviceId.toString(),
         productName: device.productName,
         manufacturerName: device.manufacturerName,
