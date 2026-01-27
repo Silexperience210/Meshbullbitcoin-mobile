@@ -64,14 +64,23 @@ jobs:
       shell: bash
       continue-on-error: true
 
-    - name: Clean Gradle cache
+    - name: Clean Gradle cache (aggressive)
       run: |
-        # Remove corrupted cache directories
-        rm -rf ~/.gradle/caches/8.13/transforms 2>/dev/null || true
-        rm -rf ~/.gradle/caches/8.13/executors 2>/dev/null || true
-        rm -rf ~/.gradle/daemon 2>/dev/null || true
+        echo "Cleaning corrupted Gradle cache..."
 
-        # Wait for cleanup to complete
+        # Remove ALL Gradle cache (aggressive cleanup)
+        rm -rf ~/.gradle/caches 2>/dev/null || true
+        rm -rf ~/.gradle/daemon 2>/dev/null || true
+        rm -rf ~/.gradle/wrapper 2>/dev/null || true
+
+        # Clean Cargo/Rust cache for openssl-sys
+        rm -rf ~/.cargo/registry/cache 2>/dev/null || true
+        rm -rf ~/.cargo/git/checkouts 2>/dev/null || true
+
+        # Clean previous short path Gradle home if exists
+        rm -rf "C:/.gradle_tmp" 2>/dev/null || true
+
+        echo "Cache cleaned"
         sleep 5
       shell: bash
       continue-on-error: true
@@ -100,7 +109,7 @@ jobs:
         # FORCE Cargo/Rust to use VENDORED OpenSSL for Android cross-compilation
         export OPENSSL_STATIC=1
         export OPENSSL_NO_PKG_CONFIG=1
-        export OPENSSL_NO_VENDOR=0
+        export OPENSSL_NO_VENDOR=0  # 0 = use vendored (do not disable vendor)
         # Unset system paths to force vendored
         unset OPENSSL_LIB_DIR
         unset OPENSSL_INCLUDE_DIR
