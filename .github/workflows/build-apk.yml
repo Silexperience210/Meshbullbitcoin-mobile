@@ -10,9 +10,6 @@ jobs:
     runs-on: self-hosted
     permissions:
       contents: write
-    defaults:
-      run:
-        working-directory: C:\build
 
     steps:
     - name: Enable Windows long paths
@@ -45,6 +42,7 @@ jobs:
         java-version: '21'
 
     - name: Force Rust to use vendored OpenSSL
+      working-directory: C:\build
       run: |
         echo "Configuring Cargo to force vendored OpenSSL..."
 
@@ -71,6 +69,7 @@ CARGOEOF
       shell: bash
 
     - name: Cleanup previous Gradle processes
+      working-directory: C:\build
       run: |
         # Stop any running Gradle daemons
         cd android && ./gradlew --stop 2>/dev/null || true
@@ -85,6 +84,7 @@ CARGOEOF
       continue-on-error: true
 
     - name: Clean Gradle cache (aggressive)
+      working-directory: C:\build
       run: |
         echo "Cleaning corrupted Gradle cache..."
 
@@ -106,20 +106,24 @@ CARGOEOF
       continue-on-error: true
 
     - name: Create .env file
+      working-directory: C:\build
       run: |
         echo "BULL_BITCOIN_API_URL=https://api.bullbitcoin.com" > .env
         echo "BULL_BITCOIN_API_KEY=" >> .env
       shell: bash
 
     - name: Install dependencies
+      working-directory: C:\build
       run: fvm flutter pub get
       shell: bash
 
     - name: Generate code (freezed, etc.)
+      working-directory: C:\build
       run: fvm dart run build_runner build --delete-conflicting-outputs
       shell: bash
 
     - name: Build APK
+      working-directory: C:\build
       run: |
         # Use SHORT path for Gradle to avoid Windows MAX_PATH issues
         export GRADLE_USER_HOME="C:/.gradle_tmp"
@@ -163,6 +167,7 @@ CARGOEOF
 
     - name: Cleanup Gradle after build
       if: always()
+      working-directory: C:\build
       run: |
         # Stop Gradle daemon
         cd android && ./gradlew --stop 2>/dev/null || true
@@ -177,16 +182,19 @@ CARGOEOF
       continue-on-error: true
 
     - name: Rename APK
+      working-directory: C:\build
       run: |
         mv build/app/outputs/flutter-apk/app-debug.apk build/app/outputs/flutter-apk/BullBitcoin-LoRa-Gateway.apk
       shell: bash
 
     - name: Get current date
       id: date
+      working-directory: C:\build
       run: echo "date=$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Create Release
+      working-directory: C:\build
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v1.0.0-lora-${{ steps.date.outputs.date }}
