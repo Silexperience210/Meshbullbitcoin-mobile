@@ -21,31 +21,38 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
-    - name: Setup OpenSSL for Cargo/Rust
+    - name: Install Strawberry Perl
       run: |
-        echo "Setting up OpenSSL for Android cross-compilation..."
+        echo "Installing Strawberry Perl..."
+        choco install strawberryperl -y --no-progress --force
+        echo "Strawberry Perl installed"
+      shell: pwsh
+      continue-on-error: false
 
-        # Option 1: Install Perl via Chocolatey for OpenSSL compilation
-        choco install strawberryperl -y --no-progress
-        refreshenv
+    - name: Setup Perl modules for OpenSSL
+      run: |
+        echo "Setting up Perl modules for OpenSSL compilation..."
 
-        # Wait for Perl installation
-        sleep 5
+        # Add Strawberry Perl to PATH for this step
+        $env:Path = "C:\Strawberry\perl\bin;C:\Strawberry\c\bin;$env:Path"
 
-        # Verify Perl installation
+        # Verify Perl
         perl --version
 
-        # Install required Perl modules
-        cpanm --notest --quiet Locale::Maketext::Simple IPC::Cmd Module::Load::Conditional
+        # Install modules using full path to cpanm
+        & "C:\Strawberry\perl\bin\cpanm.bat" --notest Locale::Maketext::Simple
+        & "C:\Strawberry\perl\bin\cpanm.bat" --notest IPC::Cmd
+        & "C:\Strawberry\perl\bin\cpanm.bat" --notest Module::Load::Conditional
+        & "C:\Strawberry\perl\bin\cpanm.bat" --notest ExtUtils::Manifest
 
         # Verify modules
-        perl -MLocale::Maketext::Simple -e "print qq{Perl OK\n}"
+        perl -MLocale::Maketext::Simple -e "print qq{Perl modules OK\n}"
 
-        # Export Perl path for subsequent steps
-        echo "C:\Strawberry\perl\bin" >> $GITHUB_PATH
-        echo "C:\Strawberry\c\bin" >> $GITHUB_PATH
+        # Add to PATH for subsequent steps
+        echo "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "C:\Strawberry\c\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-        echo "OpenSSL dependencies configured successfully!"
+        echo "Perl modules installed successfully!"
       shell: pwsh
       continue-on-error: false
 
