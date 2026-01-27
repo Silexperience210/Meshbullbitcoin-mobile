@@ -12,11 +12,18 @@ jobs:
       contents: write
 
     steps:
-    - name: Configure Git for long paths
+    - name: Enable Windows long paths
       run: |
+        # Enable long paths in Windows Registry
+        New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+          -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force | Out-Null
+
+        # Configure Git for long paths
         git config --global core.longpaths true
-        echo "Git configured for Windows long paths"
-      shell: bash
+
+        Write-Host "Windows long paths enabled (Registry + Git)"
+      shell: pwsh
+      continue-on-error: true
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -90,23 +97,34 @@ jobs:
         rm -rf "$GRADLE_USER_HOME"
         mkdir -p "$GRADLE_USER_HOME"
 
-        # FORCE Cargo/Rust to compile vendored OpenSSL - DO NOT search system
+        # FORCE Cargo/Rust to use VENDORED OpenSSL for Android cross-compilation
         export OPENSSL_STATIC=1
-        export OPENSSL_LIB_DIR=""
-        export OPENSSL_INCLUDE_DIR=""
-        # By leaving these empty, Cargo will use vendored version
-
-        # Disable any pkg-config searches
-        export PKG_CONFIG_ALLOW_CROSS=1
-        export PKG_CONFIG_PATH=""
-
-        # Force vendored for openssl-sys crate
         export OPENSSL_NO_PKG_CONFIG=1
+        export OPENSSL_NO_VENDOR=0
+        # Unset system paths to force vendored
+        unset OPENSSL_LIB_DIR
+        unset OPENSSL_INCLUDE_DIR
+        unset OPENSSL_DIR
 
-        echo "Building with vendored OpenSSL (forced, no system search)..."
+        # Configure pkg-config for cross-compilation (Android)
+        export PKG_CONFIG_ALLOW_CROSS=1
+        export PKG_CONFIG_ALL_STATIC=1
+        # Disable system pkg-config searches
+        unset PKG_CONFIG_PATH
+        unset PKG_CONFIG_LIBDIR
+
+        # Android cross-compilation target
+        export CARGO_BUILD_TARGET=aarch64-linux-android
+
+        echo "=== Build Configuration ==="
         echo "GRADLE_USER_HOME=$GRADLE_USER_HOME"
+        echo "OPENSSL_STATIC=$OPENSSL_STATIC"
+        echo "OPENSSL_NO_PKG_CONFIG=$OPENSSL_NO_PKG_CONFIG"
+        echo "PKG_CONFIG_ALLOW_CROSS=$PKG_CONFIG_ALLOW_CROSS"
+        echo "Target: Android aarch64"
+        echo "=========================="
 
-        # Build with isolated cache and short paths
+        # Build with vendored OpenSSL
         fvm flutter build apk --debug --target-platform android-arm64
       shell: bash
       env:
