@@ -21,6 +21,30 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
+    - name: Setup Perl modules for OpenSSL/Cargo
+      run: |
+        echo "Installing Perl modules required for OpenSSL compilation..."
+
+        # Check if cpanm is available (comes with Strawberry Perl)
+        if ! command -v cpanm &> /dev/null; then
+          echo "Installing cpanminus..."
+          curl -L https://cpanmin.us | perl - App::cpanminus
+        fi
+
+        # Install required Perl modules for OpenSSL configuration
+        cpanm --notest Locale::Maketext::Simple
+        cpanm --notest IPC::Cmd
+        cpanm --notest Module::Load::Conditional
+
+        # Verify installation
+        perl -MLocale::Maketext::Simple -e 'print "Locale::Maketext::Simple OK\n"'
+
+        # Export PERL5LIB to ensure modules are findable
+        echo "PERL5LIB=$HOME/perl5/lib/perl5" >> $GITHUB_ENV
+        echo "PATH=$HOME/perl5/bin:$PATH" >> $GITHUB_ENV
+      shell: bash
+      continue-on-error: false
+
     - name: Cleanup previous Gradle processes
       run: |
         # Stop any running Gradle daemons
@@ -67,6 +91,14 @@ jobs:
         export GRADLE_USER_HOME=$PWD/.gradle_home
         rm -rf $GRADLE_USER_HOME
         mkdir -p $GRADLE_USER_HOME
+
+        # Ensure Perl modules are findable by OpenSSL/Cargo
+        export PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"
+        export PATH="$HOME/perl5/bin:$PATH"
+
+        # Verify Perl can find modules
+        echo "Verifying Perl modules..."
+        perl -MLocale::Maketext::Simple -e 'print "Perl modules OK\n"' || echo "Warning: Perl module check failed"
 
         # Build with isolated cache
         fvm flutter build apk --debug --target-platform android-arm64
