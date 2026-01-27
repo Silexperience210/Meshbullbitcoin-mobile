@@ -35,16 +35,11 @@ jobs:
       run: fvm dart run build_runner build --delete-conflicting-outputs
       shell: bash
 
-    - name: Stop Gradle daemon and clean cache
-      run: |
-        cd android && ./gradlew --stop || true
-        taskkill /F /IM java.exe /T 2>/dev/null || true
-        sleep 5
-        rm -rf ~/.gradle/caches/8.13/transforms || true
-      shell: bash
-
     - name: Build APK
-      run: fvm flutter build apk --debug --target-platform android-arm64
+      run: |
+        export GRADLE_USER_HOME=$PWD/.gradle_home
+        mkdir -p $GRADLE_USER_HOME
+        fvm flutter build apk --debug --target-platform android-arm64
       shell: bash
       env:
         ANDROID_HOME: C:\Android
