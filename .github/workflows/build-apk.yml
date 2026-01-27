@@ -21,6 +21,32 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
+    - name: Cleanup previous Gradle processes
+      run: |
+        # Stop any running Gradle daemons
+        cd android && ./gradlew --stop 2>/dev/null || true
+        cd ..
+
+        # Force kill all Java processes (Gradle daemons)
+        taskkill /F /IM java.exe /T 2>/dev/null || true
+
+        # Wait for file locks to be released
+        sleep 10
+      shell: bash
+      continue-on-error: true
+
+    - name: Clean Gradle cache
+      run: |
+        # Remove corrupted cache directories
+        rm -rf ~/.gradle/caches/8.13/transforms 2>/dev/null || true
+        rm -rf ~/.gradle/caches/8.13/executors 2>/dev/null || true
+        rm -rf ~/.gradle/daemon 2>/dev/null || true
+
+        # Wait for cleanup to complete
+        sleep 5
+      shell: bash
+      continue-on-error: true
+
     - name: Create .env file
       run: |
         echo "BULL_BITCOIN_API_URL=https://api.bullbitcoin.com" > .env
@@ -37,13 +63,32 @@ jobs:
 
     - name: Build APK
       run: |
+        # Use isolated Gradle user home to avoid cache conflicts
         export GRADLE_USER_HOME=$PWD/.gradle_home
+        rm -rf $GRADLE_USER_HOME
         mkdir -p $GRADLE_USER_HOME
+
+        # Build with isolated cache
         fvm flutter build apk --debug --target-platform android-arm64
       shell: bash
       env:
         ANDROID_HOME: C:\Android
         ANDROID_SDK_ROOT: C:\Android
+
+    - name: Cleanup Gradle after build
+      if: always()
+      run: |
+        # Stop Gradle daemon
+        cd android && ./gradlew --stop 2>/dev/null || true
+        cd ..
+
+        # Kill any remaining Java processes
+        taskkill /F /IM java.exe /T 2>/dev/null || true
+
+        # Clean isolated Gradle home
+        rm -rf .gradle_home 2>/dev/null || true
+      shell: bash
+      continue-on-error: true
 
     - name: Rename APK
       run: |
