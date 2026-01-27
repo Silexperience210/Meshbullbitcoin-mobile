@@ -27,13 +27,9 @@ jobs:
       continue-on-error: true
 
     - name: Checkout code
-      working-directory: C:\
-      run: |
-        # Use short path to avoid MAX_PATH issues
-        if exist build rmdir /s /q build
-        git clone --depth 1 https://github.com/Silexperience210/Meshbullbitcoin-mobile.git build
-        echo "Checked out to C:\build"
-      shell: cmd
+      uses: actions/checkout@v4
+      with:
+        path: build
 
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -42,7 +38,7 @@ jobs:
         java-version: '21'
 
     - name: Force Rust to use vendored OpenSSL
-      working-directory: C:\build
+      working-directory: build
       run: |
         echo "Configuring Cargo to force vendored OpenSSL..."
 
