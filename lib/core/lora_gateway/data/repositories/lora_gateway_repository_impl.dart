@@ -339,7 +339,7 @@ class LoraGatewayRepositoryImpl implements LoraGatewayRepository {
     final cleanHex = message.text.replaceAll(' ', '').replaceAll('0x', '');
 
     if (_isValidTransaction(cleanHex)) {
-      final logEntryId = 'tx_text_${_logEntryCounter}';
+      final logEntryId = 'tx_text_$_logEntryCounter';
       final logEntry = _createLogEntry(
         sender: message.sender,
         status: TransactionLogStatus.broadcasting,
