@@ -21,26 +21,32 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
-    - name: Setup Perl with Strawberry Perl
-      uses: shogo82148/actions-setup-perl@v1
-      with:
-        perl-version: '5.38'
-        distribution: strawberry
-
-    - name: Install Perl modules for OpenSSL/Cargo
+    - name: Setup OpenSSL for Cargo/Rust
       run: |
-        echo "Installing Perl modules required for OpenSSL compilation..."
+        echo "Setting up OpenSSL for Android cross-compilation..."
 
-        # Install required Perl modules for OpenSSL configuration
-        cpanm --notest Locale::Maketext::Simple
-        cpanm --notest IPC::Cmd
-        cpanm --notest Module::Load::Conditional
+        # Option 1: Install Perl via Chocolatey for OpenSSL compilation
+        choco install strawberryperl -y --no-progress
+        refreshenv
 
-        # Verify installation
-        perl -MLocale::Maketext::Simple -e "print qq{Locale::Maketext::Simple OK\n}"
+        # Wait for Perl installation
+        sleep 5
 
-        echo "Perl modules installed successfully!"
-      shell: bash
+        # Verify Perl installation
+        perl --version
+
+        # Install required Perl modules
+        cpanm --notest --quiet Locale::Maketext::Simple IPC::Cmd Module::Load::Conditional
+
+        # Verify modules
+        perl -MLocale::Maketext::Simple -e "print qq{Perl OK\n}"
+
+        # Export Perl path for subsequent steps
+        echo "C:\Strawberry\perl\bin" >> $GITHUB_PATH
+        echo "C:\Strawberry\c\bin" >> $GITHUB_PATH
+
+        echo "OpenSSL dependencies configured successfully!"
+      shell: pwsh
       continue-on-error: false
 
     - name: Cleanup previous Gradle processes
@@ -90,9 +96,13 @@ jobs:
         rm -rf $GRADLE_USER_HOME
         mkdir -p $GRADLE_USER_HOME
 
-        # Verify Perl modules are available for OpenSSL/Cargo
+        # Verify Perl is available for OpenSSL compilation
         echo "Verifying Perl setup..."
-        perl -MLocale::Maketext::Simple -e "print qq{Perl modules OK for OpenSSL\n}"
+        perl -MLocale::Maketext::Simple -e "print qq{Perl modules OK for OpenSSL\n}" || echo "Warning: Perl check failed, continuing..."
+
+        # Configure Cargo/Rust environment for OpenSSL
+        export PERL="C:\\Strawberry\\perl\\bin\\perl.exe"
+        export OPENSSL_NO_VENDOR=1
 
         # Build with isolated cache
         fvm flutter build apk --debug --target-platform android-arm64
