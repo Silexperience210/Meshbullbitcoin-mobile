@@ -1,0 +1,73 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        target: aarch64-linux-android
+        
+    - name: Install Android NDK
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: Install NDK
+      run: |
+        sdkmanager "ndk;29.0.13113456"
+        
+    - name: Configure Cargo for OpenSSL vendored
+      run: |
+        mkdir -p .cargo
+        cat > .cargo/config.toml << 'CARGO_EOF'
+        [env]
+        OPENSSL_STATIC = "1"
+        OPENSSL_VENDORED = "1"
+        AARCH64_LINUX_ANDROID_OPENSSL_STATIC = "1"
+        AARCH64_LINUX_ANDROID_OPENSSL_VENDORED = "1"
+        CARGO_EOF
+        
+    - name: Create .env file
+      run: |
+        echo "BULL_BITCOIN_API_URL=https://api.bullbitcoin.com" > .env
+        echo "BULL_BITCOIN_API_KEY=" >> .env
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Build APK
+      run: flutter build apk --release --target-platform android-arm64
+      
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
