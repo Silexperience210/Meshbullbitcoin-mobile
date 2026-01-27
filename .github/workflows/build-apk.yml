@@ -21,40 +21,21 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
-    - name: Install Strawberry Perl
+    - name: Setup build dependencies (Optional - for backup)
       run: |
-        echo "Installing Strawberry Perl..."
-        choco install strawberryperl -y --no-progress --force
-        echo "Strawberry Perl installed"
-      shell: pwsh
-      continue-on-error: false
+        echo "Note: Using vendored OpenSSL - these dependencies are backup only"
 
-    - name: Setup Perl modules for OpenSSL
-      run: |
-        echo "Setting up Perl modules for OpenSSL compilation..."
+        # Optional: Install Strawberry Perl as backup (not required with vendored)
+        echo "Installing Strawberry Perl as backup..."
+        choco install strawberryperl -y --no-progress --force 2>&1 | Out-Null
 
-        # Add Strawberry Perl to PATH for this step
-        $env:Path = "C:\Strawberry\perl\bin;C:\Strawberry\c\bin;$env:Path"
-
-        # Verify Perl
-        perl --version
-
-        # Install modules using full path to cpanm
-        & "C:\Strawberry\perl\bin\cpanm.bat" --notest Locale::Maketext::Simple
-        & "C:\Strawberry\perl\bin\cpanm.bat" --notest IPC::Cmd
-        & "C:\Strawberry\perl\bin\cpanm.bat" --notest Module::Load::Conditional
-        & "C:\Strawberry\perl\bin\cpanm.bat" --notest ExtUtils::Manifest
-
-        # Verify modules
-        perl -MLocale::Maketext::Simple -e "print qq{Perl modules OK\n}"
-
-        # Add to PATH for subsequent steps
+        # Add to PATH for backup
         echo "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         echo "C:\Strawberry\c\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-        echo "Perl modules installed successfully!"
+        echo "Backup dependencies installed"
       shell: pwsh
-      continue-on-error: false
+      continue-on-error: true
 
     - name: Cleanup previous Gradle processes
       run: |
@@ -103,13 +84,15 @@ jobs:
         rm -rf $GRADLE_USER_HOME
         mkdir -p $GRADLE_USER_HOME
 
-        # Verify Perl is available for OpenSSL compilation
-        echo "Verifying Perl setup..."
-        perl -MLocale::Maketext::Simple -e "print qq{Perl modules OK for OpenSSL\n}" || echo "Warning: Perl check failed, continuing..."
+        # Configure Cargo/Rust to use VENDORED OpenSSL
+        # This forces openssl-sys to compile its embedded OpenSSL instead of using system one
+        export OPENSSL_STATIC=1
+        # DO NOT set OPENSSL_NO_VENDOR - we WANT vendored version
 
-        # Configure Cargo/Rust environment for OpenSSL
+        # Backup: Perl available if needed, but vendored should not require it
         export PERL="C:\\Strawberry\\perl\\bin\\perl.exe"
-        export OPENSSL_NO_VENDOR=1
+
+        echo "Building with vendored OpenSSL (no external dependencies)..."
 
         # Build with isolated cache
         fvm flutter build apk --debug --target-platform android-arm64
