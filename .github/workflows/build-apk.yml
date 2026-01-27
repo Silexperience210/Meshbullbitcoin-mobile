@@ -59,12 +59,12 @@ jobs:
     - name: Generate code (freezed, etc.)
       run: fvm dart run build_runner build --delete-conflicting-outputs
 
-    - name: Build APK (release)
-      run: fvm flutter build apk --release --target-platform android-arm64
+    - name: Build APK
+      run: fvm flutter build apk --debug --target-platform android-arm64
 
     - name: Rename APK
       run: |
-        mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/BullBitcoin-LoRa-Gateway.apk
+        mv build/app/outputs/flutter-apk/app-debug.apk build/app/outputs/flutter-apk/BullBitcoin-LoRa-Gateway.apk
 
     - name: Get current date
       id: date
