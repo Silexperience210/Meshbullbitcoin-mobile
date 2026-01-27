@@ -10,9 +10,13 @@ jobs:
     runs-on: self-hosted
     permissions:
       contents: write
+    defaults:
+      run:
+        working-directory: C:\build
 
     steps:
     - name: Enable Windows long paths
+      working-directory: C:\
       run: |
         # Enable long paths in Windows Registry
         New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
@@ -26,7 +30,13 @@ jobs:
       continue-on-error: true
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      working-directory: C:\
+      run: |
+        # Use short path to avoid MAX_PATH issues
+        if exist build rmdir /s /q build
+        git clone --depth 1 https://github.com/Silexperience210/Meshbullbitcoin-mobile.git build
+        echo "Checked out to C:\build"
+      shell: cmd
 
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -34,21 +44,31 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
-    - name: Setup build dependencies (Optional - for backup)
+    - name: Force Rust to use vendored OpenSSL
       run: |
-        echo "Note: Using vendored OpenSSL - these dependencies are backup only"
+        echo "Configuring Cargo to force vendored OpenSSL..."
 
-        # Optional: Install Strawberry Perl as backup (not required with vendored)
-        echo "Installing Strawberry Perl as backup..."
-        choco install strawberryperl -y --no-progress --force 2>&1 | Out-Null
+        # Create .cargo directory if not exists
+        mkdir -p .cargo
 
-        # Add to PATH for backup
-        echo "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        echo "C:\Strawberry\c\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        # Create config.toml to FORCE vendored OpenSSL for all dependencies
+        cat > .cargo/config.toml << 'CARGOEOF'
+[env]
+OPENSSL_STATIC = "1"
+OPENSSL_VENDORED = "1"
+OPENSSL_NO_VENDOR = "0"
+OPENSSL_NO_PKG_CONFIG = "1"
 
-        echo "Backup dependencies installed"
-      shell: pwsh
-      continue-on-error: true
+[target.aarch64-linux-android]
+linker = "aarch64-linux-android21-clang"
+
+[build]
+target = "aarch64-linux-android"
+CARGOEOF
+
+        echo "Cargo config created - vendored OpenSSL forced"
+        cat .cargo/config.toml
+      shell: bash
 
     - name: Cleanup previous Gradle processes
       run: |
