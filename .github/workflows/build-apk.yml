@@ -13,23 +13,24 @@ jobs:
 
     steps:
     - name: Enable Windows long paths
-      working-directory: C:\
       run: |
         # Enable long paths in Windows Registry
-        New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
-          -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force | Out-Null
+        try {
+          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+            -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force -ErrorAction Stop | Out-Null
+          Write-Host "Registry: Long paths enabled"
+        } catch {
+          Write-Host "Registry: Already configured or no permissions"
+        }
 
         # Configure Git for long paths
         git config --global core.longpaths true
-
-        Write-Host "Windows long paths enabled (Registry + Git)"
+        Write-Host "Git: Long paths enabled"
       shell: pwsh
       continue-on-error: true
 
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        path: build
 
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -38,7 +39,6 @@ jobs:
         java-version: '21'
 
     - name: Force Rust to use vendored OpenSSL
-      working-directory: build
       run: |
         echo "Configuring Cargo to force vendored OpenSSL..."
 
