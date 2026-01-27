@@ -12,6 +12,12 @@ jobs:
       contents: write
 
     steps:
+    - name: Configure Git for long paths
+      run: |
+        git config --global core.longpaths true
+        echo "Git configured for Windows long paths"
+      shell: bash
+
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -79,22 +85,28 @@ jobs:
 
     - name: Build APK
       run: |
-        # Use isolated Gradle user home to avoid cache conflicts
-        export GRADLE_USER_HOME=$PWD/.gradle_home
-        rm -rf $GRADLE_USER_HOME
-        mkdir -p $GRADLE_USER_HOME
+        # Use SHORT path for Gradle to avoid Windows MAX_PATH issues
+        export GRADLE_USER_HOME="C:/.gradle_tmp"
+        rm -rf "$GRADLE_USER_HOME"
+        mkdir -p "$GRADLE_USER_HOME"
 
-        # Configure Cargo/Rust to use VENDORED OpenSSL
-        # This forces openssl-sys to compile its embedded OpenSSL instead of using system one
+        # FORCE Cargo/Rust to compile vendored OpenSSL - DO NOT search system
         export OPENSSL_STATIC=1
-        # DO NOT set OPENSSL_NO_VENDOR - we WANT vendored version
+        export OPENSSL_LIB_DIR=""
+        export OPENSSL_INCLUDE_DIR=""
+        # By leaving these empty, Cargo will use vendored version
 
-        # Backup: Perl available if needed, but vendored should not require it
-        export PERL="C:\\Strawberry\\perl\\bin\\perl.exe"
+        # Disable any pkg-config searches
+        export PKG_CONFIG_ALLOW_CROSS=1
+        export PKG_CONFIG_PATH=""
 
-        echo "Building with vendored OpenSSL (no external dependencies)..."
+        # Force vendored for openssl-sys crate
+        export OPENSSL_NO_PKG_CONFIG=1
 
-        # Build with isolated cache
+        echo "Building with vendored OpenSSL (forced, no system search)..."
+        echo "GRADLE_USER_HOME=$GRADLE_USER_HOME"
+
+        # Build with isolated cache and short paths
         fvm flutter build apk --debug --target-platform android-arm64
       shell: bash
       env:
@@ -111,8 +123,8 @@ jobs:
         # Kill any remaining Java processes
         taskkill /F /IM java.exe /T 2>/dev/null || true
 
-        # Clean isolated Gradle home
-        rm -rf .gradle_home 2>/dev/null || true
+        # Clean isolated Gradle home (SHORT path)
+        rm -rf "C:/.gradle_tmp" 2>/dev/null || true
       shell: bash
       continue-on-error: true
 
