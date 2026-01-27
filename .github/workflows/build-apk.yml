@@ -107,9 +107,10 @@ jobs:
         mkdir -p "$GRADLE_USER_HOME"
 
         # FORCE Cargo/Rust to use VENDORED OpenSSL for Android cross-compilation
-        export OPENSSL_STATIC=1
-        export OPENSSL_NO_PKG_CONFIG=1
-        export OPENSSL_NO_VENDOR=0  # 0 = use vendored (do not disable vendor)
+        export OPENSSL_STATIC=1        # Static linking
+        export OPENSSL_VENDORED=1      # Use vendored OpenSSL
+        export OPENSSL_NO_VENDOR=0     # Do not disable vendor (0 = enabled)
+        export OPENSSL_NO_PKG_CONFIG=1 # No pkg-config search
         # Unset system paths to force vendored
         unset OPENSSL_LIB_DIR
         unset OPENSSL_INCLUDE_DIR
