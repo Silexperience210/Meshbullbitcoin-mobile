@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/lora_gateway/presentation/bloc/lora_gateway_c
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 /// Main screen for the LoRa Gateway feature.
 class LoraGatewayScreen extends StatelessWidget {
@@ -41,6 +42,8 @@ class LoraGatewayScreen extends StatelessWidget {
               const _ConnectionControls(),
               const Gap(16),
               const _NetworkToggle(),
+              const Gap(16),
+              const _DisasterTxCard(),
               const Gap(16),
               const _StatsCard(),
               const Gap(16),
@@ -303,6 +306,28 @@ class _NetworkToggle extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Disaster TX card - Link to offline transaction broadcasting.
+class _DisasterTxCard extends StatelessWidget {
+  const _DisasterTxCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.emergency,
+          color: context.appColors.warning,
+          size: 32,
+        ),
+        title: const Text('Disaster TX'),
+        subtitle: const Text('Broadcast transactions offline via LoRa mesh'),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () => context.push('/disaster-tx'),
+      ),
     );
   }
 }
