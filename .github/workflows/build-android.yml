@@ -30,6 +30,11 @@ jobs:
         toolchain: stable
         target: aarch64-linux-android
 
+    - name: Install Rust nightly for payjoin_flutter
+      run: |
+        rustup toolchain install nightly
+        rustup target add aarch64-linux-android --toolchain nightly
+
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
