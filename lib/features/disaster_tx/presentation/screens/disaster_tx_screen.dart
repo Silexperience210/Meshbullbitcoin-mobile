@@ -51,7 +51,6 @@ class _DisasterTxScreenState extends State<DisasterTxScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Disaster TX'),
-        subtitle: const Text('Broadcast via LoRa Mesh'),
         actions: [
           BlocBuilder<DisasterTxCubit, DisasterTxState>(
             builder: (context, state) {

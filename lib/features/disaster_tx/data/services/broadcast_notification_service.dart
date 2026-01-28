@@ -83,7 +83,7 @@ class BroadcastNotificationService {
   }) async {
     final percentage = (progress * 100).toInt();
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       _channelId,
       _channelName,
       channelDescription: _channelDescription,
