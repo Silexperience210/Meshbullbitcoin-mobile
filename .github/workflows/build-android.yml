@@ -20,6 +20,10 @@ jobs:
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /opt/ghc
         sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo rm -rf /usr/local/share/boost
+        sudo rm -rf /usr/share/swift
+        sudo rm -rf /opt/az
+        sudo rm -rf /usr/local/.ghcup
         sudo docker image prune --all --force || true
         sudo apt-get clean
         echo "Disk space after cleanup:"
@@ -80,11 +84,11 @@ jobs:
       run: fvm dart run build_runner build --delete-conflicting-outputs
 
     - name: Build APK
-      run: fvm flutter build apk --debug --target-platform android-arm64
+      run: fvm flutter build apk --debug --target-platform android-arm64 --split-per-abi
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug
-        path: build/app/outputs/flutter-apk/app-debug.apk
+        name: app-debug-arm64
+        path: build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk
         retention-days: 30
