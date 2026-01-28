@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'disaster_tx_state.freezed.dart';
 
 @freezed
-class DisasterTxState with _$DisasterTxState {
+abstract class DisasterTxState with _$DisasterTxState {
   const factory DisasterTxState({
     @Default([]) List<MeshtasticDevice> availableDevices,
     MeshtasticDevice? selectedDevice,
@@ -17,4 +17,6 @@ class DisasterTxState with _$DisasterTxState {
     TxChunk? currentChunk,
     String? errorMessage,
   }) = _DisasterTxState;
+
+  const DisasterTxState._();
 }
