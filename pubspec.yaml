@@ -129,6 +129,9 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   usb_serial: ^0.5.1      # Communication USB série pour LoRa Gateway
+  flutter_blue_plus: ^1.32.0  # BLE communication pour Disaster TX
+  flutter_local_notifications: ^17.0.0  # Notifications persistantes
+  shared_preferences: ^2.2.0  # Cache dernier device
 
 dev_dependencies:
   build_runner: ^2.10.4
