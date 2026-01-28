@@ -13,6 +13,18 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v5
 
+    - name: Free up disk space
+      run: |
+        echo "Disk space before cleanup:"
+        df -h
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo apt-get clean
+        echo "Disk space after cleanup:"
+        df -h
+
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
