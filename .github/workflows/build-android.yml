@@ -80,11 +80,11 @@ jobs:
       run: fvm dart run build_runner build --delete-conflicting-outputs
 
     - name: Build APK
-      run: fvm flutter build apk --release --target-platform android-arm64
+      run: fvm flutter build apk --debug --target-platform android-arm64
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: app-release
-        path: build/app/outputs/flutter-apk/app-release.apk
+        name: app-debug
+        path: build/app/outputs/flutter-apk/app-debug.apk
         retention-days: 30
